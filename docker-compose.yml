@@ -1,0 +1,52 @@
+# docker-compose.yml
+# ─────────────────────────────────────────────────────────────────────────────
+# One-command local development using Docker Compose.
+#
+# Usage:
+#   docker-compose up --build        → Build image and start the app
+#   docker-compose up -d             → Run in detached (background) mode
+#   docker-compose down              → Stop and remove containers
+#   docker-compose logs -f           → Stream live logs
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  vein-auth:
+    # Build from our project Dockerfile (context = project root)
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+
+    # Name the running container for easy reference
+    container_name: vein-auth-app
+
+    # Map host port 8501 → container port 8501
+    ports:
+      - "8501:8501"
+
+    # Mount the project directory as a volume.
+    # This means code changes on your host are reflected inside the container
+    # WITHOUT needing to rebuild — great for development!
+    volumes:
+      - .:/app
+
+    # Environment variables for Streamlit
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_SERVER_HEADLESS=true
+      # Disable Streamlit's usage statistics collection
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+
+    # Restart the container automatically if it crashes
+    restart: unless-stopped
+
+    # Docker Compose will check this healthcheck before marking the service healthy
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

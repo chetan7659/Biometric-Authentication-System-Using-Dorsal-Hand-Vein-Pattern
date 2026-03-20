@@ -1,0 +1,25 @@
+[server]
+# Railway / Docker: must listen on 0.0.0.0 to be accessible outside the container
+address = "0.0.0.0"
+port = 8501
+
+# Disable the "Do you want to report an error?" browser popup — not useful in cloud
+headless = true
+
+# Allow iframe embedding (useful for demo pages)
+enableCORS = false
+enableXsrfProtection = false
+
+[browser]
+# Do not open a browser tab automatically (no browser in Docker/Railway)
+serverAddress = "0.0.0.0"
+gatherUsageStats = false
+
+[theme]
+# A clean dark theme that suits the biometric/security nature of the app
+base = "dark"
+primaryColor = "#4F8BF9"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#1A1F2E"
+textColor = "#FAFAFA"
+font = "sans serif"
